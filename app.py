@@ -6,11 +6,17 @@ from views.gabriel import mostrar_vista as vista_gabriel
 # Configuración de página
 st.set_page_config(page_title="Sistema de Gestión", layout="wide")
 
-# Inicializar variable de estado para navegación
+# Inicializar variables de estado para la navegación
 if "opcion_seleccionada" not in st.session_state:
     st.session_state.opcion_seleccionada = None
 
-# Enrutamiento de pantallas
+if "hoja_anzuelos" not in st.session_state:
+    st.session_state.hoja_anzuelos = None
+
+if "hoja_gabriel" not in st.session_state:
+    st.session_state.hoja_gabriel = None
+
+# Enrutamiento de pantallas principales
 if st.session_state.opcion_seleccionada is None:
     mostrar_inicio()
 elif st.session_state.opcion_seleccionada == "anzuelos":
