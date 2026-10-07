@@ -12,7 +12,7 @@ def letra_a_indice(letra):
 CONFIG_GABRIEL = {
     "articulos de pesca": {"fila_inicio": 3, "columnas": ["b", "c", "d", "e"]},
     "40x burbuja": {"fila_inicio": 2, "columnas": ["a", "b", "e", "f", "g", "h", "j"]},
-    "40g cuadrado": {"fila_inicio": 2, "columnas": ["a", "b", "e", "f", "g", "h", "j"]},
+    "40g cuadrado": {"fila_inicio": 2, "columnas": ["a", "b", "e", "f", "g", "h", "K"]},
     "repuestos 75": {"fila_inicio": 2, "columnas": ["a", "b", "e", "f", "g", "i", "j", "k"]},
     "Repuestos Suzuky(1)": {"fila_inicio": 2, "columnas": ["a", "b", "e", "f", "g", "h", "i", "j", "k"]},
     "Repuestos Tohatsu": {"fila_inicio": 1, "columnas": ["a", "b", "c", "d", "e", "g", "h"]},
