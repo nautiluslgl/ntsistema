@@ -1,15 +1,14 @@
 import streamlit as st
+from utils.drive_loader import cargar_hoja_drive, ID_ANZUELOS
 
 def mostrar_vista():
     st.subheader("🎣 Sección: Anzuelos y nailon detallado")
-    st.write("Selecciona la pestaña u hoja que deseas consultar:")
 
-    # Inicializar estado para la hoja elegida
     if "hoja_anzuelos" not in st.session_state:
         st.session_state.hoja_anzuelos = None
 
-    # Si aún no ha seleccionado ninguna hoja, mostramos los botones
     if st.session_state.hoja_anzuelos is None:
+        st.write("Selecciona la pestaña u hoja que deseas consultar:")
         st.write("")
         col1, col2 = st.columns(2)
 
@@ -31,12 +30,16 @@ def mostrar_vista():
             st.session_state.hoja_anzuelos = None
             st.rerun()
 
-    # Si ya seleccionó una hoja, mostramos su contenido y opción de regresar
     else:
-        st.info(f"Visualizando la hoja: **{st.session_state.hoja_anzuelos}**")
+        st.subheader(f"Hoja: {st.session_state.hoja_anzuelos}")
         
-        # Aquí cargaremos la tabla correspondiente a la hoja elegida
-        st.write("*(Próximamente: Tabla de datos cargada desde Google Drive)*")
+        # Carga de datos
+        try:
+            with st.spinner("Cargando datos desde Google Drive..."):
+                df = cargar_hoja_drive(ID_ANZUELOS, st.session_state.hoja_anzuelos)
+                st.dataframe(df, use_container_width=True)
+        except Exception as e:
+            st.error(f"Error al cargar la hoja: {e}")
 
         st.write("")
         col_back1, col_back2 = st.columns(2)
