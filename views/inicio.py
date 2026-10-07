@@ -12,10 +12,12 @@ def mostrar_inicio():
     with col2:
         if st.button("🎣 Anzuelos y nailon detallado", use_container_width=True):
             st.session_state.opcion_seleccionada = "anzuelos"
+            st.session_state.hoja_anzuelos = None  # Resetea subhoja
             st.rerun()
 
         st.write("")
 
         if st.button("📦 Gabriel 5", use_container_width=True):
             st.session_state.opcion_seleccionada = "gabriel"
+            st.session_state.hoja_gabriel = None   # Resetea subhoja
             st.rerun()
