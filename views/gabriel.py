@@ -1,14 +1,12 @@
 import streamlit as st
+from utils.drive_loader import cargar_hoja_drive, ID_GABRIEL
 
 def mostrar_vista():
     st.subheader("📦 Sección: Gabriel 5")
-    st.write("Selecciona la pestaña u hoja que deseas consultar:")
 
-    # Inicializar estado para la hoja elegida en Gabriel 5
     if "hoja_gabriel" not in st.session_state:
         st.session_state.hoja_gabriel = None
 
-    # Lista de hojas disponibles
     hojas = [
         "articulos de pesca",
         "40x burbuja",
@@ -22,13 +20,12 @@ def mostrar_vista():
         "REPUESTOS 5,8,60,70,30"
     ]
 
-    # Si no ha seleccionado hoja, mostramos los botones en 2 columnas
     if st.session_state.hoja_gabriel is None:
+        st.write("Selecciona la pestaña u hoja que deseas consultar:")
         st.write("")
         col1, col2 = st.columns(2)
         
         for i, hoja in enumerate(hojas):
-            # Alternar entre columna 1 y columna 2
             col = col1 if i % 2 == 0 else col2
             with col:
                 if st.button(f"📄 {hoja}", key=f"btn_gabriel_{i}", use_container_width=True):
@@ -43,11 +40,16 @@ def mostrar_vista():
             st.session_state.hoja_gabriel = None
             st.rerun()
 
-    # Si ya seleccionó una hoja, mostramos su vista
     else:
-        st.info(f"Visualizando la hoja: **{st.session_state.hoja_gabriel}**")
+        st.subheader(f"Hoja: {st.session_state.hoja_gabriel}")
         
-        st.write("*(Próximamente: Tabla de datos cargada desde Google Drive)*")
+        # Carga de datos
+        try:
+            with st.spinner("Cargando datos desde Google Drive..."):
+                df = cargar_hoja_drive(ID_GABRIEL, st.session_state.hoja_gabriel)
+                st.dataframe(df, use_container_width=True)
+        except Exception as e:
+            st.error(f"Error al cargar la hoja: {e}")
 
         st.write("")
         col_back1, col_back2 = st.columns(2)
