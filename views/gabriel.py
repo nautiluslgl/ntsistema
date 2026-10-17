@@ -36,8 +36,8 @@ def mostrar_vista():
         try:
             with st.spinner("Cargando datos desde Google Drive..."):
                 df = cargar_hoja_drive(ID_GABRIEL, hoja_actual)
-                cfg = CONFIG_GABRIEL.get(hoja_actual, {})
                 
+                # Renderizar tabla interactiva con selección de celdas
                 event = st.dataframe(
                     df, 
                     use_container_width=True,
@@ -45,46 +45,50 @@ def mostrar_vista():
                     selection_mode="single-cell"
                 )
 
+                # Detección de celda seleccionada
                 selection = event.get("selection", {}).get("cells", [])
                 if selection:
                     row_idx, col_idx = selection[0]
                     row_idx = int(row_idx)
                     col_idx = int(col_idx)
                     
-                    cols_list = cfg.get("columnas", [])
-                    col_bs_letra = str(cfg.get("col_bs", "")).lower()
-                    col_usd_letra = str(cfg.get("col_usd", "")).lower()
+                    # Nombre del encabezado de la columna tocada
+                    nombre_columna = str(df.columns[col_idx]).strip()
+                    nombre_col_lower = nombre_columna.lower()
                     
-                    # Determinar posiciones de las columnas filtradas
-                    idx_bs = cols_list.index(col_bs_letra) if col_bs_letra in cols_list else -1
-                    idx_usd = cols_list.index(col_usd_letra) if col_usd_letra in cols_list else -1
-
+                    # Fila seleccionada
                     fila = df.iloc[row_idx]
                     
-                    # Producto
+                    # Asumimos que la descripción del producto es la segunda columna útil (índice 1)
                     producto = str(fila.iloc[1]) if len(fila) > 1 else f"Fila {row_idx + 1}"
+                    valor_celda = fila.iloc[col_idx]
 
-                    if col_idx == idx_bs or col_idx == idx_usd:
-                        tipo_precio = "Bs." if col_idx == idx_bs else "USD"
-                        val_precio = fila.iloc[col_idx]
+                    # Validar si la columna seleccionada corresponde a un precio (Bs o USD)
+                    # Detecta palabras clave en el encabezado
+                    es_bs = any(k in nombre_col_lower for k in ["bs", "bolivar", "bolívares"])
+                    es_usd = any(k in nombre_col_lower for k in ["usd", "$", "dolar", "dólar", "precio"])
+                    
+                    # Si la columna es de precios
+                    if es_bs or es_usd or ("precio" in nombre_col_lower):
+                        moneda = "Bs." if es_bs else ("USD" if es_usd else "Monto")
                         
-                        st.info(f"📍 **Producto:** {producto} | **Precio ({tipo_precio}):** {val_precio}")
+                        st.info(f"📍 **Producto:** {producto} | **{nombre_columna}:** {valor_celda}")
 
-                        if st.button(f"➕ Añadir '{producto}' al Presupuesto", type="primary"):
-                            val_bs = fila.iloc[idx_bs] if idx_bs >= 0 else 0
-                            val_usd = fila.iloc[idx_usd] if idx_usd >= 0 else 0
+                        if st.button(f"➕ Añadir '{producto}' ({moneda}: {valor_celda}) al Presupuesto", type="primary"):
+                            precio_bs = valor_celda if es_bs else 0
+                            precio_usd = valor_celda if es_usd else 0
                             
                             st.session_state.presupuesto.append({
                                 "producto": producto,
-                                "precio_bs": val_bs,
-                                "precio_usd": val_usd,
-                                "moneda": tipo_precio,
+                                "precio_bs": precio_bs,
+                                "precio_usd": precio_usd,
+                                "moneda": moneda,
                                 "hoja": hoja_actual
                             })
-                            st.success(f"¡'{producto}' agregado con éxito!")
+                            st.success(f"¡'{producto}' agregado al presupuesto!")
                             st.rerun()
                     else:
-                        st.warning("⚠️ Selecciona una celda de la columna de precio (Bs. o USD) para habilitar el botón de agregar.")
+                        st.warning(f"⚠️ Has seleccionado la columna **'{nombre_columna}'**. Por favor, haz clic directamente en una celda de las columnas de **Precio (Bs. o USD)** para poder agregarlo.")
 
         except Exception as e:
             st.error(f"Error al cargar la hoja: {e}")
