@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 
 # 1. Variables de IDs requeridas por las otras vistas
-ID_ANZUELOS = "PEGA_AQUI_TU_ID_REAL_DE_ANZUELOS"
-ID_GABRIEL = "PEGA_AQUI_TU_ID_REAL_DE_GABRIEL_5"
+ID_ANZUELOS = "1TIazPVWAkkN7xVwgJhMiRelhlYq2sa6k"
+ID_GABRIEL = "1aD2C4665oaUSxtODfXSEvOQIvLJbwH3s"
 
 
 def letra_a_indice(letra):
