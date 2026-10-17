@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 
 # URLs / IDs de Google Drive
-ID_ANZUELOS = "https://docs.google.com/spreadsheets/d/1TIazPVWAkkN7xVwgJhMiRelhlYq2sa6k/edit?usp=drive_link&ouid=105460918628305679068&rtpof=true&sd=true"
-ID_GABRIEL = "https://docs.google.com/spreadsheets/d/1aD2C4665oaUSxtODfXSEvOQIvLJbwH3s/edit?usp=drive_link&ouid=105460918628305679068&rtpof=true&sd=true"
+ID_ANZUELOS = "1TIazPVWAkkN7xVwgJhMiRelhlYq2sa6k"
+ID_GABRIEL = "1aD2C4665oaUSxtODfXSEvOQIvLJbwH3s"
 
 def letra_a_indice(letra):
     return ord(letra.upper()) - ord('A')
