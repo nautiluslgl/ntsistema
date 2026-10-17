@@ -1,7 +1,11 @@
 import streamlit as st
 import pandas as pd
 
-# 1. AQUÍ VA LA FUNCIÓN BLINDADA
+# 1. Variables de IDs requeridas por las otras vistas
+ID_ANZUELOS = "PEGA_AQUI_TU_ID_REAL_DE_ANZUELOS"
+ID_GABRIEL = "PEGA_AQUI_TU_ID_REAL_DE_GABRIEL_5"
+
+
 def letra_a_indice(letra):
     """Convierte posiciones o letras de Excel a índice base 0 ignorando nombres de texto."""
     if isinstance(letra, int):
@@ -23,6 +27,9 @@ def letra_a_indice(letra):
         
     # Si recibe un encabezado de texto (ej: 'precio Bs', 'NOMBRE'), lo ignora devolviendo -1
     return -1
+
+
+# 2. Configuración de Gabriel
 CONFIG_GABRIEL = {
     "articulos de pesca": {
         "fila_inicio": 3, 
@@ -32,49 +39,51 @@ CONFIG_GABRIEL = {
     "40x burbuja": {
         "fila_inicio": 2, 
         "columnas": ["a", "b", "e", "f", "g", "h", "j"],
-        "col_producto": "b", "col_usd": "e", "col_bs": "j"
+        "col_producto": "b", "col_bs": "j", "col_usd": "e"
     },
     "40g cuadrado": {
         "fila_inicio": 2, 
         "columnas": ["a", "b", "e", "f", "g", "h", "j"],
-        "col_producto": "b", "col_bs": "e", "col_usd": "j"
+        "col_producto": "b", "col_bs": "j", "col_usd": "e"
     },
     "repuestos 75": {
         "fila_inicio": 2, 
         "columnas": ["a", "b", "e", "f", "g", "i", "j", "k"],
-        "col_producto": "b", "col_bs": "e", "col_usd": "k"
+        "col_producto": "b", "col_bs": "k", "col_usd": "e"
     },
     "Repuestos Suzuky(1)": {
         "fila_inicio": 2, 
         "columnas": ["a", "b", "e", "f", "g", "h", "i", "j", "k"],
-        "col_producto": "b", "col_bs": "e", "col_usd": "k"
+        "col_producto": "b", "col_bs": "k", "col_usd": "e"
     },
     "Repuestos Tohatsu": {
         "fila_inicio": 1, 
         "columnas": ["a", "b", "c", "d", "e", "g", "h"],
-        "col_producto": "b", "col_bs": "e", "col_usd": "h"
+        "col_producto": "b", "col_bs": "h", "col_usd": "e"
     },
     "repuestos 25": {
         "fila_inicio": 2, 
         "columnas": ["a", "b", "e", "f", "h", "j", "k"],
-        "col_producto": "b", "col_bs": "e", "col_usd": "k"
+        "col_producto": "b", "col_bs": "k", "col_usd": "e"
     },
     "REPUESTOS 48": {
         "fila_inicio": 2, 
         "columnas": ["a", "b", "d", "f", "g", "h", "j", "k"],
-        "col_producto": "b", "col_bs": "d", "col_usd": "k"
+        "col_producto": "b", "col_bs": "k", "col_usd": "d"
     },
     "REPUESTOS 15,2HP": {
         "fila_inicio": 2, 
         "columnas": ["a", "b", "f", "g", "h", "i", "j", "k"],
-        "col_producto": "b", "col_bs": "f", "col_usd": "k"
+        "col_producto": "b", "col_bs": "k", "col_usd": "f"
     },
     "REPUESTOS 5,8,60,70,30": {
         "fila_inicio": 3, 
         "columnas": ["a", "b", "c", "e", "f", "h"],
-        "col_producto": "b", "col_bs": "e", "col_usd": "h"
+        "col_producto": "b", "col_bs": "h", "col_usd": "e"
     }
 }
+
+
 @st.cache_data(ttl=600)
 def cargar_hoja_drive(id_archivo, nombre_hoja):
     url = f"https://docs.google.com/spreadsheets/d/{id_archivo}/export?format=xlsx"
