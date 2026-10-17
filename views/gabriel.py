@@ -54,7 +54,7 @@ def mostrar_vista():
                     col_bs_letra = str(cfg.get("col_bs", "")).lower()
                     col_usd_letra = str(cfg.get("col_usd", "")).lower()
                     col_prod_letra = str(cfg.get("col_producto", "")).lower()
-
+                    
                     idx_bs = cols_list.index(col_bs_letra) if col_bs_letra in cols_list else -1
                     idx_usd = cols_list.index(col_usd_letra) if col_usd_letra in cols_list else -1
                     idx_prod = cols_list.index(col_prod_letra) if col_prod_letra in cols_list else 1
