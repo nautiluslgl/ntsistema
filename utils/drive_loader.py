@@ -61,18 +61,24 @@ CONFIG_GABRIEL = {
         "col_producto": "b", "col_bs": "e", "col_usd": "h"
     }
 }
-
 @st.cache_data(ttl=600)
 def cargar_hoja_drive(id_archivo, nombre_hoja):
     url = f"https://docs.google.com/spreadsheets/d/{id_archivo}/export?format=xlsx"
     
-    if nombre_hoja in CONFIG_GABRIEL:
-        cfg = CONFIG_GABRIEL[nombre_hoja]
-        header_row = int(cfg["fila_inicio"]) - 1
+    # Buscar configuración ignorando diferencias de mayúsculas/minúsculas
+    config_encontrada = None
+    for clave, cfg in CONFIG_GABRIEL.items():
+        if clave.strip().lower() == str(nombre_hoja).strip().lower():
+            config_encontrada = cfg
+            break
+
+    if config_encontrada:
+        # Fila de inicio convertida de forma segura
+        header_row = int(config_encontrada.get("fila_inicio", 2)) - 1
         
         df = pd.read_excel(url, sheet_name=nombre_hoja, header=header_row)
 
-        cols_indices = [letra_a_indice(c) for c in cfg["columnas"]]
+        cols_indices = [letra_a_indice(c) for c in config_encontrada.get("columnas", [])]
         cols_validas = [i for i in cols_indices if 0 <= i < df.shape[1]]
         
         df = df.iloc[:, cols_validas]
