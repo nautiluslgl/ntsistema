@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.drive_loader import cargar_hoja_drive, ID_GABRIEL
+from utils.drive_loader import cargar_hoja_drive, ID_GABRIEL, CONFIG_GABRIEL
 
 def mostrar_vista():
     st.subheader("📦 Sección: Gabriel 5")
@@ -7,18 +7,7 @@ def mostrar_vista():
     if "hoja_gabriel" not in st.session_state:
         st.session_state.hoja_gabriel = None
 
-    hojas = [
-        "articulos de pesca",
-        "40x burbuja",
-        "40g cuadrado",
-        "repuestos 75",
-        "Repuestos Suzuky(1)",
-        "Repuestos Tohatsu",
-        "repuestos 25",
-        "REPUESTOS 48",
-        "REPUESTOS 15,2HP",
-        "REPUESTOS 5,8,60,70,30"
-    ]
+    hojas = list(CONFIG_GABRIEL.keys())
 
     if st.session_state.hoja_gabriel is None:
         st.write("Selecciona la pestaña u hoja que deseas consultar:")
@@ -41,13 +30,48 @@ def mostrar_vista():
             st.rerun()
 
     else:
-        st.subheader(f"Hoja: {st.session_state.hoja_gabriel}")
+        hoja_actual = st.session_state.hoja_gabriel
+        st.subheader(f"Hoja: {hoja_actual}")
         
-        # Carga de datos
         try:
             with st.spinner("Cargando datos desde Google Drive..."):
-                df = cargar_hoja_drive(ID_GABRIEL, st.session_state.hoja_gabriel)
-                st.dataframe(df, use_container_width=True)
+                df = cargar_hoja_drive(ID_GABRIEL, hoja_actual)
+                
+                # Renderizar tabla interactiva con selección de celda
+                event = st.dataframe(
+                    df, 
+                    use_container_width=True,
+                    on_select="rerun",
+                    selection_mode="single-cell"
+                )
+
+                # Verificar celda seleccionada
+                selection = event.get("selection", {}).get("cells", [])
+                if selection:
+                    row_idx, col_idx = selection[0]
+                    nombre_columna = df.columns[col_idx]
+                    
+                    cfg = CONFIG_GABRIEL.get(hoja_actual, {})
+                    
+                    # Obtener producto y precios de la fila seleccionada
+                    fila = df.iloc[row_idx]
+                    producto = str(fila.iloc[1]) if len(fila) > 1 else f"Ítem fila {row_idx+1}"
+                    
+                    val_bs = fila.iloc[2] if len(fila) > 2 else 0
+                    val_usd = fila.iloc[-1] if len(fila) > 0 else 0
+
+                    st.info(f"📍 **Seleccionado:** {producto} | **Columna:** {nombre_columna}")
+
+                    if st.button(f"➕ Añadir '{producto}' al Presupuesto", type="primary"):
+                        st.session_state.presupuesto.append({
+                            "producto": producto,
+                            "precio_bs": val_bs,
+                            "precio_usd": val_usd,
+                            "hoja": hoja_actual
+                        })
+                        st.success(f"¡'{producto}' agregado con éxito!")
+                        st.rerun()
+
         except Exception as e:
             st.error(f"Error al cargar la hoja: {e}")
 
