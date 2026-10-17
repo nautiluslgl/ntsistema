@@ -6,9 +6,9 @@ ID_ANZUELOS = "1TIazPVWAkkN7xVwgJhMiRelhlYq2sa6k"
 ID_GABRIEL = "1aD2C4665oaUSxtODfXSEvOQIvLJbwH3s"
 
 def letra_a_indice(letra):
-    return ord(letra.upper()) - ord('A')
+    """Convierte letras como 'A', 'B', 'E' en enteros 0, 1, 4."""
+    return ord(str(letra).strip().upper()) - ord('A')
 
-# Configuración extendida con mapeo de columnas para presupuesto
 CONFIG_GABRIEL = {
     "articulos de pesca": {
         "fila_inicio": 3, 
@@ -23,7 +23,7 @@ CONFIG_GABRIEL = {
     "40g cuadrado": {
         "fila_inicio": 2, 
         "columnas": ["a", "b", "e", "f", "g", "h", "j"],
-        "col_producto": "b", "col_bs": "e", "col_usd": "k"
+        "col_producto": "b", "col_bs": "e", "col_usd": "j"
     },
     "repuestos 75": {
         "fila_inicio": 2, 
@@ -33,7 +33,7 @@ CONFIG_GABRIEL = {
     "Repuestos Suzuky(1)": {
         "fila_inicio": 2, 
         "columnas": ["a", "b", "e", "f", "g", "h", "i", "j", "k"],
-        "col_producto": "b", "col_bs": "f", "col_usd": "j"
+        "col_producto": "b", "col_bs": "e", "col_usd": "k"
     },
     "Repuestos Tohatsu": {
         "fila_inicio": 1, 
@@ -68,15 +68,20 @@ def cargar_hoja_drive(id_archivo, nombre_hoja):
     
     if nombre_hoja in CONFIG_GABRIEL:
         cfg = CONFIG_GABRIEL[nombre_hoja]
-        header_row = cfg["fila_inicio"] - 1
-        cols_indices = [letra_a_indice(c) for c in cfg["columnas"]]
-
+        header_row = int(cfg["fila_inicio"]) - 1
+        
+        # Cargar dataframe completo desde la fila de encabezado
         df = pd.read_excel(url, sheet_name=nombre_hoja, header=header_row)
 
-        valid_indices = [i for i in cols_indices if i < len(df.columns)]
+        # Convertir a índices enteros de Python seguros
+        cols_indices = [int(letra_a_indice(c)) for c in cfg["columnas"]]
+        valid_indices = [idx for idx in cols_indices if 0 <= idx < len(df.columns)]
+        
+        # Filtrar columnas numéricamente por iloc
         df = df.iloc[:, valid_indices]
     else:
         df = pd.read_excel(url, sheet_name=nombre_hoja)
 
+    # Eliminar filas vacías
     df = df.dropna(how="all")
     return df
