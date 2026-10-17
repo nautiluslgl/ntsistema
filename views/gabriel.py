@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from utils.drive_loader import cargar_hoja_drive, ID_GABRIEL, CONFIG_GABRIEL, letra_a_indice
-from utils.budget_manager import agregar_al_presupuesto
+from utils.budget_manager import agregar_al_presupuesto, inicializar_presupuesto
 
 def mostrar_vista():
     st.subheader("📦 Sección: Gabriel 5")
@@ -56,11 +56,9 @@ def mostrar_vista():
 
                         row_idx = int(raw_row) if str(raw_row).isdigit() else -1
 
-                        # Determinar el índice de columna en el DataFrame recortado
                         if isinstance(raw_col, int) or str(raw_col).isdigit():
                             col_idx = int(raw_col)
                         else:
-                            # Si Streamlit devuelve el nombre de columna (ej. 'PRECIO' o 'precio Bs')
                             col_name_str = str(raw_col).strip()
                             col_idx = df.columns.get_loc(col_name_str) if col_name_str in df.columns else -1
 
@@ -76,10 +74,9 @@ def mostrar_vista():
 
                             fila = df.iloc[row_idx]
                             
-                            # Extraction del nombre base del producto
                             nombre_prod = str(fila.iloc[idx_prod]).strip() if (0 <= idx_prod < len(fila)) else f"Fila {row_idx + 1}"
                             
-                            # Búsqueda dinámica de la columna de marca en la tabla
+                            # Extraer marca si existe
                             marca_val = ""
                             for col_title in df.columns:
                                 if "marca" in str(col_title).lower():
@@ -88,7 +85,6 @@ def mostrar_vista():
                                         marca_val = val
                                     break
 
-                            # Construcción del nombre final del producto
                             producto = f"{nombre_prod} ({marca_val})" if marca_val else nombre_prod
 
                             if col_idx == idx_bs or col_idx == idx_usd:
@@ -96,16 +92,23 @@ def mostrar_vista():
                                 moneda = "Bs." if es_bs else "USD"
                                 val_precio = fila.iloc[col_idx]
                                 
-                                st.info(f"📍 **Producto:** {producto} | **Precio ({moneda}):** {val_precio}")
+                                # Consultar cuántos llevas actualmente en el presupuesto
+                                inicializar_presupuesto()
+                                cant_en_presupuesto = 0
+                                for item in st.session_state.presupuesto:
+                                    if item["producto"] == producto and item["hoja"] == hoja_actual:
+                                        cant_en_presupuesto = item["cantidad"]
+                                        break
 
-                                # Key único basado en la celda para evitar duplicidad de botones en Streamlit
-                                btn_key = f"btn_add_{hoja_actual}_{row_idx}_{col_idx}"
+                                st.info(f"📍 **Producto:** {producto} | **Precio ({moneda}):** {val_precio} | **En presupuesto:** {cant_en_presupuesto}")
 
-                                if st.button(f"➕ Añadir '{producto}' ({moneda}) al Presupuesto", key=btn_key, type="primary"):
+                                # Botón con Key dinámico que se refresca al instante
+                                btn_key = f"add_btn_{hoja_actual}_{row_idx}_{col_idx}_{cant_en_presupuesto}"
+
+                                if st.button(f"➕ Añadir 1 a '{producto}' ({moneda})", key=btn_key, type="primary"):
                                     val_bs = fila.iloc[idx_bs] if idx_bs >= 0 else 0
                                     val_usd = fila.iloc[idx_usd] if idx_usd >= 0 else 0
                                     
-                                    # Delegación limpia al gestor de presupuesto
                                     agregar_al_presupuesto(
                                         producto=producto,
                                         precio_bs=val_bs,
@@ -113,8 +116,6 @@ def mostrar_vista():
                                         moneda=moneda,
                                         hoja=hoja_actual
                                     )
-                                    
-                                    st.success(f"¡'{producto}' añadido al presupuesto!")
                                     st.rerun()
                             else:
                                 st.warning("⚠️ Haz clic directamente sobre una celda de las columnas de **PRECIO** o **precio Bs** para activar el botón.")
