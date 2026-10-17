@@ -38,7 +38,6 @@ def mostrar_vista():
                 df = cargar_hoja_drive(ID_GABRIEL, hoja_actual)
                 cfg = CONFIG_GABRIEL.get(hoja_actual, {})
                 
-                # Renderizar tabla interactiva
                 event = st.dataframe(
                     df, 
                     use_container_width=True,
@@ -46,7 +45,6 @@ def mostrar_vista():
                     selection_mode="single-cell"
                 )
 
-                # Detección de celda
                 selection = event.get("selection", {}).get("cells", [])
                 if selection:
                     row_idx, col_idx = selection[0]
@@ -57,13 +55,13 @@ def mostrar_vista():
                     col_bs_letra = str(cfg.get("col_bs", "")).lower()
                     col_usd_letra = str(cfg.get("col_usd", "")).lower()
                     
-                    # Identificar posiciones relativas
+                    # Determinar posiciones de las columnas filtradas
                     idx_bs = cols_list.index(col_bs_letra) if col_bs_letra in cols_list else -1
                     idx_usd = cols_list.index(col_usd_letra) if col_usd_letra in cols_list else -1
 
                     fila = df.iloc[row_idx]
                     
-                    # Producto (columna B de la tabla)
+                    # Producto
                     producto = str(fila.iloc[1]) if len(fila) > 1 else f"Fila {row_idx + 1}"
 
                     if col_idx == idx_bs or col_idx == idx_usd:
