@@ -38,11 +38,10 @@ def agregar_al_presupuesto(producto, precio_bs, precio_usd, moneda, hoja):
 
 
 def generar_texto_cotizacion():
-    """Genera el texto con el formato exacto para copiar y pegar en WhatsApp."""
+    """Genera el texto formateado para copiar directamente a WhatsApp."""
     if not st.session_state.presupuesto:
         return ""
 
-    # Determinar la moneda predominante seleccionada por el usuario
     monedas = [item.get("moneda_seleccionada", "Bs.") for item in st.session_state.presupuesto]
     es_usd = monedas.count("USD") > monedas.count("Bs.")
 
@@ -72,7 +71,7 @@ def generar_texto_cotizacion():
 
 
 def renderizar_sidebar_presupuesto():
-    """Dibuja el panel lateral con opción de copiar cotización."""
+    """Dibuja el panel lateral con la opción de copiar cotización."""
     inicializar_presupuesto()
 
     st.sidebar.markdown("## 📋 Presupuesto Activo")
@@ -105,17 +104,17 @@ def renderizar_sidebar_presupuesto():
 
     col_btn1, col_btn2 = st.sidebar.columns(2)
     with col_btn1:
-        if st.button("🧹 Limpiar", use_container_width=True):
+        if st.sidebar.button("🧹 Limpiar", use_container_width=True):
             st.session_state.presupuesto = []
             st.session_state.mostrar_cotizacion = False
             st.rerun()
 
     with col_btn2:
-        if st.button("📋 Copiar", use_container_width=True, type="primary"):
+        if st.sidebar.button("📋 Copiar", use_container_width=True, type="primary"):
             st.session_state.mostrar_cotizacion = True
 
-    # Desplegar el cuadro de texto para copiar al presionar "📋 Copiar"
+    # Desplegar el cuadro de código para copiar con 1 clic
     if st.session_state.get("mostrar_cotizacion", False):
-        st.sidebar.success("¡Texto listo! Haz clic en el botón de copiar (arriba a la derecha del cuadro):")
+        st.sidebar.success("¡Texto listo! Usa el botón en la esquina superior derecha del recuadro:")
         texto_cotizacion = generar_texto_cotizacion()
         st.sidebar.code(texto_cotizacion, language="text")
