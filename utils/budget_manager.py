@@ -1,29 +1,31 @@
 import streamlit as st
+import pandas as pd
 
 def inicializar_presupuesto():
-    """Asegura que el presupuesto exista en la sesión."""
+    """Garantiza la presencia del presupuesto en session_state."""
     if "presupuesto" not in st.session_state:
         st.session_state.presupuesto = []
 
 
 def agregar_al_presupuesto(producto, precio_bs, precio_usd, moneda, hoja):
     """
-    Agrega un producto al presupuesto. 
-    Si ya existe en la misma hoja, incrementa la cantidad de forma transparente.
+    Agrega el producto. Si ya existe bajo la misma hoja,
+    incrementa la cantidad en lugar de duplicar la entrada.
     """
     inicializar_presupuesto()
 
+    # Sanitización de importes
     try:
-        val_bs = float(precio_bs) if precio_bs is not None else 0.0
+        val_bs = float(precio_bs) if pd.notnull(precio_bs) else 0.0
     except (ValueError, TypeError):
         val_bs = 0.0
 
     try:
-        val_usd = float(precio_usd) if precio_usd is not None else 0.0
+        val_usd = float(precio_usd) if pd.notnull(precio_usd) else 0.0
     except (ValueError, TypeError):
         val_usd = 0.0
 
-    # Buscar si el producto ya existe en la lista
+    # Búsqueda de duplicados en la misma hoja
     encontrado = False
     for item in st.session_state.presupuesto:
         if item["producto"] == producto and item["hoja"] == hoja:
@@ -43,7 +45,7 @@ def agregar_al_presupuesto(producto, precio_bs, precio_usd, moneda, hoja):
 
 
 def renderizar_sidebar_presupuesto():
-    """Dibuja el panel/sidebar con el presupuesto agrupado y los totales."""
+    """Dibuja el presupuesto en la barra lateral con cantidades agrupadas."""
     inicializar_presupuesto()
 
     st.sidebar.markdown("## 📋 Presupuesto Activo")
@@ -56,7 +58,7 @@ def renderizar_sidebar_presupuesto():
     total_usd = 0.0
     total_items = sum(item.get("cantidad", 1) for item in st.session_state.presupuesto)
 
-    st.sidebar.write(f"**Ítems totales:** {total_items}")
+    st.sidebar.write(f"**Ítems agregados:** {total_items}")
     st.sidebar.divider()
 
     for idx, item in enumerate(st.session_state.presupuesto, start=1):
@@ -67,9 +69,9 @@ def renderizar_sidebar_presupuesto():
         total_bs += subtotal_bs
         total_usd += subtotal_usd
 
-        # Visualización agrupada: 2x Anodo externo
+        # Despliegue agrupado ej. "1. 2x Anodo externo"
         st.sidebar.markdown(f"**{idx}. {cant}x {item['producto']}**")
-        st.sidebar.caption(f"Subtotal: {subtotal_bs:,.2f} Bs | {subtotal_usd:,.2f} USD")
+        st.sidebar.caption(f"Precio: {subtotal_bs:,.2f} Bs | {subtotal_usd:,.2f} USD")
         st.sidebar.caption(f"📁 *Hoja: {item['hoja']}*")
         st.sidebar.divider()
 
