@@ -2,19 +2,13 @@ import streamlit as st
 import pandas as pd
 
 def inicializar_presupuesto():
-    """Garantiza la presencia del presupuesto en session_state."""
     if "presupuesto" not in st.session_state:
         st.session_state.presupuesto = []
 
 
 def agregar_al_presupuesto(producto, precio_bs, precio_usd, moneda, hoja):
-    """
-    Agrega el producto. Si ya existe bajo la misma hoja,
-    incrementa la cantidad en lugar de duplicar la entrada.
-    """
     inicializar_presupuesto()
 
-    # Sanitización de importes
     try:
         val_bs = float(precio_bs) if pd.notnull(precio_bs) else 0.0
     except (ValueError, TypeError):
@@ -25,7 +19,7 @@ def agregar_al_presupuesto(producto, precio_bs, precio_usd, moneda, hoja):
     except (ValueError, TypeError):
         val_usd = 0.0
 
-    # Búsqueda de duplicados en la misma hoja
+    # Buscar coincidencia exacta
     encontrado = False
     for item in st.session_state.presupuesto:
         if item["producto"] == producto and item["hoja"] == hoja:
@@ -45,7 +39,6 @@ def agregar_al_presupuesto(producto, precio_bs, precio_usd, moneda, hoja):
 
 
 def renderizar_sidebar_presupuesto():
-    """Dibuja el presupuesto en la barra lateral con cantidades agrupadas."""
     inicializar_presupuesto()
 
     st.sidebar.markdown("## 📋 Presupuesto Activo")
@@ -69,10 +62,8 @@ def renderizar_sidebar_presupuesto():
         total_bs += subtotal_bs
         total_usd += subtotal_usd
 
-        # Despliegue agrupado ej. "1. 2x Anodo externo"
         st.sidebar.markdown(f"**{idx}. {cant}x {item['producto']}**")
         st.sidebar.caption(f"Precio: {subtotal_bs:,.2f} Bs | {subtotal_usd:,.2f} USD")
-        st.sidebar.caption(f"📁 *Hoja: {item['hoja']}*")
         st.sidebar.divider()
 
     st.sidebar.markdown(f"### Total Bs: {total_bs:,.2f}")
