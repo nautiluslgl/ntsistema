@@ -53,9 +53,16 @@ def mostrar_vista():
                         raw_col = selection[0][1]
 
                         row_idx = int(raw_row) if str(raw_row).isdigit() else -1
-                        col_idx = int(raw_col) if str(raw_col).isdigit() else letra_a_indice(raw_col)
 
-                        if row_idx >= 0 and col_idx >= 0:
+                        # Determinar el índice de columna en el DataFrame recortado
+                        if isinstance(raw_col, int) or str(raw_col).isdigit():
+                            col_idx = int(raw_col)
+                        else:
+                            # Si Streamlit devuelve el nombre de columna (ej. 'PRECIO' o 'precio Bs')
+                            col_name_str = str(raw_col).strip()
+                            col_idx = df.columns.get_loc(col_name_str) if col_name_str in df.columns else -1
+
+                        if row_idx >= 0 and 0 <= col_idx < df.shape[1]:
                             cols_list = [str(c).lower() for c in cfg.get("columnas", [])]
                             col_bs_letra = str(cfg.get("col_bs", "")).lower()
                             col_usd_letra = str(cfg.get("col_usd", "")).lower()
@@ -66,32 +73,30 @@ def mostrar_vista():
                             idx_prod = cols_list.index(col_prod_letra) if col_prod_letra in cols_list else 1
 
                             fila = df.iloc[row_idx]
-                            
-                            if col_idx < len(fila):
-                                producto = str(fila.iloc[idx_prod]) if (0 <= idx_prod < len(fila)) else f"Fila {row_idx + 1}"
+                            producto = str(fila.iloc[idx_prod]) if (0 <= idx_prod < len(fila)) else f"Fila {row_idx + 1}"
 
-                                if col_idx == idx_bs or col_idx == idx_usd:
-                                    es_bs = (col_idx == idx_bs)
-                                    moneda = "Bs." if es_bs else "USD"
-                                    val_precio = fila.iloc[col_idx]
+                            if col_idx == idx_bs or col_idx == idx_usd:
+                                es_bs = (col_idx == idx_bs)
+                                moneda = "Bs." if es_bs else "USD"
+                                val_precio = fila.iloc[col_idx]
+                                
+                                st.info(f"📍 **Producto:** {producto} | **Precio ({moneda}):** {val_precio}")
+
+                                if st.button(f"➕ Añadir '{producto}' ({moneda}) al Presupuesto", type="primary"):
+                                    val_bs = fila.iloc[idx_bs] if idx_bs >= 0 else 0
+                                    val_usd = fila.iloc[idx_usd] if idx_usd >= 0 else 0
                                     
-                                    st.info(f"📍 **Producto:** {producto} | **Precio ({moneda}):** {val_precio}")
-
-                                    if st.button(f"➕ Añadir '{producto}' ({moneda}) al Presupuesto", type="primary"):
-                                        val_bs = fila.iloc[idx_bs] if idx_bs >= 0 else 0
-                                        val_usd = fila.iloc[idx_usd] if idx_usd >= 0 else 0
-                                        
-                                        st.session_state.presupuesto.append({
-                                            "producto": producto,
-                                            "precio_bs": val_bs,
-                                            "precio_usd": val_usd,
-                                            "moneda_seleccionada": moneda,
-                                            "hoja": hoja_actual
-                                        })
-                                        st.success(f"¡'{producto}' añadido al presupuesto!")
-                                        st.rerun()
-                                else:
-                                    st.warning("⚠️ Haz clic directamente sobre una celda de las columnas de **Precio** para activar el botón de agregar.")
+                                    st.session_state.presupuesto.append({
+                                        "producto": producto,
+                                        "precio_bs": val_bs,
+                                        "precio_usd": val_usd,
+                                        "moneda_seleccionada": moneda,
+                                        "hoja": hoja_actual
+                                    })
+                                    st.success(f"¡'{producto}' añadido al presupuesto!")
+                                    st.rerun()
+                            else:
+                                st.warning("⚠️ Haz clic directamente sobre una celda de las columnas de **PRECIO** o **precio Bs** para activar el botón.")
                     except Exception as sel_err:
                         st.warning("Selecciona una celda de precio válida.")
 
