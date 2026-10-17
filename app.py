@@ -17,7 +17,7 @@ if "hoja_anzuelos" not in st.session_state:
 if "hoja_gabriel" not in st.session_state:
     st.session_state.hoja_gabriel = None
 
-# 2. Renderizar el Sidebar mediante el gestor unificado
+# 2. Renderizar el Sidebar desde el gestor centralizado
 renderizar_sidebar_presupuesto()
 
 # 3. Enrutamiento de pantallas principales
