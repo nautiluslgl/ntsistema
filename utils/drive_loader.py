@@ -1,14 +1,28 @@
 import streamlit as st
 import pandas as pd
 
-ID_ANZUELOS = "1TIazPVWAkkN7xVwgJhMiRelhlYq2sa6k"
-ID_GABRIEL = "1aD2C4665oaUSxtODfXSEvOQIvLJbwH3s"
-
+# 1. AQUÍ VA LA FUNCIÓN BLINDADA
 def letra_a_indice(letra):
-    """Convierte letras de Excel ('A', 'B', 'E') a índice numérico base 0."""
-    l = str(letra).strip().upper()
-    return ord(l) - ord('A')
-
+    """Convierte posiciones o letras de Excel a índice base 0 ignorando nombres de texto."""
+    if isinstance(letra, int):
+        return letra
+    
+    col_str = str(letra).strip()
+    
+    # Si es un número en texto ej. "5"
+    if col_str.isdigit():
+        return int(col_str)
+    
+    # Si es estrictamente una letra de columna de Excel (ej: "A", "B", "E", "J")
+    if col_str.isalpha():
+        col_str_upper = col_str.upper()
+        idx = 0
+        for char in col_str_upper:
+            idx = idx * 26 + (ord(char) - ord('A') + 1)
+        return idx - 1
+        
+    # Si recibe un encabezado de texto (ej: 'precio Bs', 'NOMBRE'), lo ignora devolviendo -1
+    return -1
 CONFIG_GABRIEL = {
     "articulos de pesca": {
         "fila_inicio": 3, 
@@ -18,7 +32,7 @@ CONFIG_GABRIEL = {
     "40x burbuja": {
         "fila_inicio": 2, 
         "columnas": ["a", "b", "e", "f", "g", "h", "j"],
-        "col_producto": "b", "col_bs": "e", "col_usd": "j"
+        "col_producto": "b", "col_usd": "e", "col_bs": "j"
     },
     "40g cuadrado": {
         "fila_inicio": 2, 
@@ -65,7 +79,6 @@ CONFIG_GABRIEL = {
 def cargar_hoja_drive(id_archivo, nombre_hoja):
     url = f"https://docs.google.com/spreadsheets/d/{id_archivo}/export?format=xlsx"
     
-    # Buscar configuración ignorando diferencias de mayúsculas/minúsculas
     config_encontrada = None
     for clave, cfg in CONFIG_GABRIEL.items():
         if clave.strip().lower() == str(nombre_hoja).strip().lower():
@@ -73,15 +86,14 @@ def cargar_hoja_drive(id_archivo, nombre_hoja):
             break
 
     if config_encontrada:
-        # Fila de inicio convertida de forma segura
         header_row = int(config_encontrada.get("fila_inicio", 2)) - 1
-        
         df = pd.read_excel(url, sheet_name=nombre_hoja, header=header_row)
 
         cols_indices = [letra_a_indice(c) for c in config_encontrada.get("columnas", [])]
         cols_validas = [i for i in cols_indices if 0 <= i < df.shape[1]]
         
-        df = df.iloc[:, cols_validas]
+        if cols_validas:
+            df = df.iloc[:, cols_validas]
     else:
         df = pd.read_excel(url, sheet_name=nombre_hoja)
 
