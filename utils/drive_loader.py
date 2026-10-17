@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 
-ID_ANZUELOS = "TU_ID_DE_GOOGLE_DRIVE_ANZUELOS"
-ID_GABRIEL = "TU_ID_DE_GOOGLE_DRIVE_GABRIEL"
+ID_ANZUELOS = "1TIazPVWAkkN7xVwgJhMiRelhlYq2sa6k"
+ID_GABRIEL = "1aD2C4665oaUSxtODfXSEvOQIvLJbwH3s"
 
 def letra_a_indice(col):
     """Convierte letras de Excel ('A', 'B', 'E') o números a índices enteros de Python (0, 1, 4)."""
