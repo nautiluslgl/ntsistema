@@ -6,28 +6,27 @@ ID_ANZUELOS = "1TIazPVWAkkN7xVwgJhMiRelhlYq2sa6k"
 ID_GABRIEL = "1aD2C4665oaUSxtODfXSEvOQIvLJbwH3s"
 
 
+# --- PEGA LA FUNCIÓN AQUÍ ---
 def letra_a_indice(letra):
-    """Convierte posiciones o letras de Excel a índice base 0 ignorando nombres de texto."""
     if isinstance(letra, int):
         return letra
     
     col_str = str(letra).strip()
     
-    # Si es un número en texto ej. "5"
     if col_str.isdigit():
         return int(col_str)
     
-    # Si es estrictamente una letra de columna de Excel (ej: "A", "B", "E", "J")
-    if col_str.isalpha():
-        col_str_upper = col_str.upper()
+    col_str_upper = col_str.upper()
+    
+    # Solo procesa si son letras y NO TIENE más de 3 caracteres (ej: "A", "B", "E", "J", "AA")
+    if col_str_upper.isalpha() and len(col_str_upper) <= 3:
         idx = 0
         for char in col_str_upper:
             idx = idx * 26 + (ord(char) - ord('A') + 1)
         return idx - 1
         
-    # Si recibe un encabezado de texto (ej: 'precio Bs', 'NOMBRE'), lo ignora devolviendo -1
+    # Palabras como "PRECIO", "NOMBRE", "precio Bs" son descartadas devolviendo -1
     return -1
-
 
 # 2. Configuración de Gabriel
 CONFIG_GABRIEL = {
