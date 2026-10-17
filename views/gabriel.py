@@ -75,7 +75,21 @@ def mostrar_vista():
                             idx_prod = cols_list.index(col_prod_letra) if col_prod_letra in cols_list else 1
 
                             fila = df.iloc[row_idx]
-                            producto = str(fila.iloc[idx_prod]) if (0 <= idx_prod < len(fila)) else f"Fila {row_idx + 1}"
+                            
+                            # Extraction del nombre base del producto
+                            nombre_prod = str(fila.iloc[idx_prod]).strip() if (0 <= idx_prod < len(fila)) else f"Fila {row_idx + 1}"
+                            
+                            # Búsqueda dinámica de la columna de marca en la tabla
+                            marca_val = ""
+                            for col_title in df.columns:
+                                if "marca" in str(col_title).lower():
+                                    val = str(fila[col_title]).strip()
+                                    if val and val.lower() != "none" and val != ",":
+                                        marca_val = val
+                                    break
+
+                            # Construcción del nombre final del producto
+                            producto = f"{nombre_prod} ({marca_val})" if marca_val else nombre_prod
 
                             if col_idx == idx_bs or col_idx == idx_usd:
                                 es_bs = (col_idx == idx_bs)
@@ -84,7 +98,10 @@ def mostrar_vista():
                                 
                                 st.info(f"📍 **Producto:** {producto} | **Precio ({moneda}):** {val_precio}")
 
-                                if st.button(f"➕ Añadir '{producto}' ({moneda}) al Presupuesto", type="primary"):
+                                # Key único basado en la celda para evitar duplicidad de botones en Streamlit
+                                btn_key = f"btn_add_{hoja_actual}_{row_idx}_{col_idx}"
+
+                                if st.button(f"➕ Añadir '{producto}' ({moneda}) al Presupuesto", key=btn_key, type="primary"):
                                     val_bs = fila.iloc[idx_bs] if idx_bs >= 0 else 0
                                     val_usd = fila.iloc[idx_usd] if idx_usd >= 0 else 0
                                     
