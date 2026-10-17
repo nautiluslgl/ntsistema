@@ -1,5 +1,7 @@
 import streamlit as st
+import pandas as pd
 from utils.drive_loader import cargar_hoja_drive, ID_GABRIEL, CONFIG_GABRIEL, letra_a_indice
+from utils.budget_manager import agregar_al_presupuesto
 
 def mostrar_vista():
     st.subheader("📦 Sección: Gabriel 5")
@@ -86,13 +88,15 @@ def mostrar_vista():
                                     val_bs = fila.iloc[idx_bs] if idx_bs >= 0 else 0
                                     val_usd = fila.iloc[idx_usd] if idx_usd >= 0 else 0
                                     
-                                    st.session_state.presupuesto.append({
-                                        "producto": producto,
-                                        "precio_bs": val_bs,
-                                        "precio_usd": val_usd,
-                                        "moneda_seleccionada": moneda,
-                                        "hoja": hoja_actual
-                                    })
+                                    # Delegación limpia al gestor de presupuesto
+                                    agregar_al_presupuesto(
+                                        producto=producto,
+                                        precio_bs=val_bs,
+                                        precio_usd=val_usd,
+                                        moneda=moneda,
+                                        hoja=hoja_actual
+                                    )
+                                    
                                     st.success(f"¡'{producto}' añadido al presupuesto!")
                                     st.rerun()
                             else:
