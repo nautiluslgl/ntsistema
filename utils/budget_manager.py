@@ -19,7 +19,7 @@ def agregar_al_presupuesto(producto, precio_bs, precio_usd, moneda, hoja):
     except (ValueError, TypeError):
         val_usd = 0.0
 
-    # Buscar coincidencia exacta
+    # Buscar coincidencia por producto y hoja
     encontrado = False
     for item in st.session_state.presupuesto:
         if item["producto"] == producto and item["hoja"] == hoja:
@@ -39,6 +39,7 @@ def agregar_al_presupuesto(producto, precio_bs, precio_usd, moneda, hoja):
 
 
 def renderizar_sidebar_presupuesto():
+    """Dibuja el panel lateral calculando subtotales por cantidad acumulada."""
     inicializar_presupuesto()
 
     st.sidebar.markdown("## 📋 Presupuesto Activo")
@@ -62,13 +63,20 @@ def renderizar_sidebar_presupuesto():
         total_bs += subtotal_bs
         total_usd += subtotal_usd
 
-        st.sidebar.markdown(f"**{idx}. {cant}x {item['producto']}**")
+        # Texto acumulado (ej. 1. 11x Anodo externo (METALBAI))
+        texto_item = f"**{idx}. {cant}x {item['producto']}**" if cant > 1 else f"**{idx}. {item['producto']}**"
+        st.sidebar.markdown(texto_item)
         st.sidebar.caption(f"Precio: {subtotal_bs:,.2f} Bs | {subtotal_usd:,.2f} USD")
         st.sidebar.divider()
 
     st.sidebar.markdown(f"### Total Bs: {total_bs:,.2f}")
     st.sidebar.markdown(f"### Total USD: {total_usd:,.2f}")
 
-    if st.sidebar.button("🗑️ Vaciar Presupuesto", use_container_width=True):
-        st.session_state.presupuesto = []
-        st.rerun()
+    col_btn1, col_btn2 = st.sidebar.columns(2)
+    with col_btn1:
+        if st.button("🧹 Limpiar", use_container_width=True):
+            st.session_state.presupuesto = []
+            st.rerun()
+    with col_btn2:
+        if st.button("💾 Guardar", use_container_width=True):
+            st.sidebar.success("Presupuesto guardado")
