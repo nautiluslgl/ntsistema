@@ -6,7 +6,8 @@ ID_GABRIEL = "1aD2C4665oaUSxtODfXSEvOQIvLJbwH3s"
 
 def letra_a_indice(letra):
     """Convierte letras de Excel ('A', 'B', 'E') a índice numérico base 0."""
-    return ord(str(letra).strip().upper()) - ord('A')
+    l = str(letra).strip().upper()
+    return ord(l) - ord('A')
 
 CONFIG_GABRIEL = {
     "articulos de pesca": {
