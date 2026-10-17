@@ -38,7 +38,6 @@ def mostrar_vista():
                 df = cargar_hoja_drive(ID_GABRIEL, hoja_actual)
                 cfg = CONFIG_GABRIEL.get(hoja_actual, {})
                 
-                # Renderizar la tabla con selección interactiva por celda
                 event = st.dataframe(
                     df, 
                     use_container_width=True,
@@ -46,20 +45,16 @@ def mostrar_vista():
                     selection_mode="single-cell"
                 )
 
-                # Detección limpia de la celda pulsada
                 selection = event.get("selection", {}).get("cells", [])
                 if selection:
-                    row_idx, col_idx = selection[0]
-                    row_idx = int(row_idx)
-                    col_idx = int(col_idx)
+                    row_idx = int(selection[0][0])
+                    col_idx = int(selection[0][1])
                     
-                    # Lista de letras de columnas recortadas
-                    cols_list = [c.lower() for c in cfg.get("columnas", [])]
+                    cols_list = [str(c).lower() for c in cfg.get("columnas", [])]
                     col_bs_letra = str(cfg.get("col_bs", "")).lower()
                     col_usd_letra = str(cfg.get("col_usd", "")).lower()
                     col_prod_letra = str(cfg.get("col_producto", "")).lower()
 
-                    # Índice en la tabla recortada
                     idx_bs = cols_list.index(col_bs_letra) if col_bs_letra in cols_list else -1
                     idx_usd = cols_list.index(col_usd_letra) if col_usd_letra in cols_list else -1
                     idx_prod = cols_list.index(col_prod_letra) if col_prod_letra in cols_list else 1
@@ -67,7 +62,6 @@ def mostrar_vista():
                     fila = df.iloc[row_idx]
                     producto = str(fila.iloc[idx_prod]) if idx_prod < len(fila) else f"Fila {row_idx + 1}"
 
-                    # Si el usuario hace clic exactamente en la columna de Bs o USD
                     if col_idx == idx_bs or col_idx == idx_usd:
                         es_bs = (col_idx == idx_bs)
                         moneda = "Bs." if es_bs else "USD"
