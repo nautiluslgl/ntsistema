@@ -42,43 +42,43 @@ CONFIG_GABRIEL = {
     },
     "40g cuadrado": {
         "fila_inicio": 2, 
-        "columnas": ["a", "b", "e", "f", "g", "h", "j"],
-        "col_producto": "b", "col_bs": "j", "col_usd": "e"
+        "columnas": ["a", "b", "e", "f", "g", "h", "k"],
+        "col_producto": "b", "col_bs": "k", "col_usd": "e"
     },
     "repuestos 75": {
         "fila_inicio": 2, 
-        "columnas": ["a", "b", "e", "f", "g", "i", "j", "k"],
+        "columnas": ["a", "b", "e", "f", "g", "i", "k"],
         "col_producto": "b", "col_bs": "k", "col_usd": "e"
     },
     "Repuestos Suzuky(1)": {
         "fila_inicio": 2, 
-        "columnas": ["a", "b", "e", "f", "g", "h", "i", "j", "k"],
-        "col_producto": "b", "col_bs": "k", "col_usd": "e"
+        "columnas": ["a", "b", "e", "f", "g", "h", "j"],
+        "col_producto": "b", "col_bs": "j", "col_usd": "f"
     },
     "Repuestos Tohatsu": {
-        "fila_inicio": 1, 
-        "columnas": ["a", "b", "c", "d", "e", "g", "h"],
-        "col_producto": "b", "col_bs": "h", "col_usd": "e"
+        "fila_inicio": 2, 
+        "columnas": ["a", "b", "c", "f", "g", "j", "m"],
+        "col_producto": "b", "col_bs": "m", "col_usd": "g"
     },
     "repuestos 25": {
         "fila_inicio": 2, 
-        "columnas": ["a", "b", "e", "f", "h", "j", "k"],
+        "columnas": ["a", "b", "e", "f", "k"],
         "col_producto": "b", "col_bs": "k", "col_usd": "e"
     },
     "REPUESTOS 48": {
         "fila_inicio": 2, 
-        "columnas": ["a", "b", "d", "f", "g", "h", "j", "k"],
+        "columnas": ["a", "b", "d", "f", "k"],
         "col_producto": "b", "col_bs": "k", "col_usd": "d"
     },
     "REPUESTOS 15,2HP": {
         "fila_inicio": 2, 
-        "columnas": ["a", "b", "f", "g", "h", "i", "j", "k"],
+        "columnas": ["a", "b", "e", "f", "g", "j"],
         "col_producto": "b", "col_bs": "k", "col_usd": "f"
     },
     "REPUESTOS 5,8,60,70,30": {
         "fila_inicio": 3, 
         "columnas": ["a", "b", "c", "e", "f", "h"],
-        "col_producto": "b", "col_bs": "h", "col_usd": "e"
+        "col_producto": "b", "col_bs": "j", "col_usd": "e"
     }
 }
 
